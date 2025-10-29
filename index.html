@@ -4,6 +4,24 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Stack Game</title>
+    <style>
+      body {
+        background: #000;
+        margin: 0;
+        display: grid;
+        place-content: center;
+        height: 100vh;
+      }
+      canvas {
+        border: 1px solid white;
+      }
+    </style>
+
+    <!-- Se tipifica el 'script' de tipo 'module' porque va a cargarse siempre de forma defer, significa que se va a cargar una vez que a renderizado (a parseado del HTML) Va de arriba a abajo: /> styles /> script /> body -->
+    <script type="module">
+      const canvas = document.querySelector("canvas");
+      const ctx = canvas.getContext("2d");
+    </script>
   </head>
   <body>
     <canvas id="canvas" width="320" height="500"></canvas>

@@ -55,6 +55,8 @@
         ySpeed = INITIAL_Y_SPEED;
         scrollCounter = 0;
         cameraY = 0;
+
+        createNewBox();
       }
 
       function restart() {
@@ -67,6 +69,10 @@
 
         drawBackground();
         drawBoxes();
+
+        if (mode === MODES.BOUNCE) {
+          moveAndDetectCollision();
+        }
 
         window.requestAnimationFrame(draw);
       }
@@ -84,6 +90,36 @@
           ctx.fillStyle = color;
           ctx.fillRect(x, nwY, width, BOX_HEIGHT);
         });
+      }
+
+      // Crear nueva caja
+      function createNewBox() {
+        boxes[current] = {
+          x: 0,
+          y: (current + 10) * BOX_HEIGHT,
+          width: boxes[current - 1].width,
+          color: "white",
+        };
+      }
+
+      // Mover caja
+      function moveAndDetectCollision() {
+        const currentBox = boxes[current];
+        currentBox.x += xSpeed;
+
+        const isMovingRight = xSpeed > 0;
+        const isMovingLeft = xSpeed < 0;
+
+        const hasHitRightWall = currentBox.x + currentBox.width > canvas.width;
+
+        const hasHitLeftWall = currentBox.x < 0;
+
+        if (
+          (isMovingRight && hasHitRightWall) ||
+          (isMovingLeft && hasHitLeftWall)
+        ) {
+          xSpeed *= -1;
+        }
       }
 
       restart();

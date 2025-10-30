@@ -2,18 +2,42 @@ const canvas = document.querySelector("canvas");
 const ctx = canvas.getContext("2d");
 const score = document.querySelector("#score");
 
+// Configurar canvas responsive
+function setupCanvas() {
+  const maxWidth = Math.min(window.innerWidth * 0.9, 500);
+  const maxHeight = window.innerHeight * 0.7;
+
+  // Mantener aspect ratio 320:500 (0.64)
+  const aspectRatio = 0.64;
+
+  let width = maxWidth;
+  let height = width / aspectRatio;
+
+  if (height > maxHeight) {
+    height = maxHeight;
+    width = height * aspectRatio;
+  }
+
+  canvas.width = Math.floor(width);
+  canvas.height = Math.floor(height);
+}
+
 // Constantes
 const MODES = {
   FALL: "fall",
   BOUNCE: "bounce",
   GAMEOVER: "gameover",
 };
-const INITIAL_BOX_WIDTH = 200;
-const INITIAL_BOX_Y = 600;
 
-const BOX_HEIGHT = 50;
-const INITIAL_Y_SPEED = 5;
-const INITIAL_X_SPEED = 2;
+// Configurar dimensiones iniciales
+setupCanvas();
+
+const INITIAL_BOX_WIDTH = canvas.width * 0.625; // 62.5% del ancho del canvas (200/320)
+const INITIAL_BOX_Y = canvas.height * 1.2; // Proporción basada en altura
+
+const BOX_HEIGHT = canvas.height * 0.1; // 10% de la altura del canvas (50/500)
+const INITIAL_Y_SPEED = canvas.height * 0.01; // 1% de la altura
+const INITIAL_X_SPEED = canvas.width * 0.00625; // Proporción similar al original
 
 // State
 let boxes = [];
@@ -231,5 +255,14 @@ canvas.onpointerdown = () => {
     mode = MODES.FALL;
   }
 };
+
+// Manejar redimensionamiento de ventana
+window.addEventListener("resize", () => {
+  setupCanvas();
+  // Reiniciar el juego para ajustar las proporciones
+  if (mode !== MODES.GAMEOVER) {
+    restart();
+  }
+});
 
 restart();

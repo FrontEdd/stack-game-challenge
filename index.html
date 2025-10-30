@@ -37,6 +37,7 @@
 
       // State
       let boxes = [];
+      let debris = { x: 0, y: 0, width: 0 };
       let scrollCounter, cameraY, current, mode, xSpeed, ySpeed;
 
       function createStepColor(step) {
@@ -66,6 +67,8 @@
           },
         ];
 
+        debris = { x: 0, y: 0, width: 0 };
+
         current = 1;
         mode = MODES.BOUNCE;
         xSpeed = INITIAL_X_SPEED;
@@ -86,6 +89,7 @@
 
         drawBackground();
         drawBoxes();
+        drawDebris();
 
         if (mode === MODES.BOUNCE) {
           moveAndDetectCollision();
@@ -93,6 +97,7 @@
           updateFallMode();
         }
 
+        debris.y -= ySpeed;
         updateCamera();
 
         window.requestAnimationFrame(draw);
@@ -101,6 +106,14 @@
       function drawBackground() {
         ctx.fillStyle = "black";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
+      }
+
+      function drawDebris() {
+        const { x, y, width } = debris;
+        const nwY = INITIAL_BOX_Y - y + cameraY;
+
+        ctx.fillStyle = "red";
+        ctx.fillRect(x, nwY, width, BOX_HEIGHT);
       }
 
       function drawBoxes() {
@@ -123,6 +136,23 @@
         };
       }
 
+      // Visualizar la parte que sobra
+      function createNewDebris(difference) {
+        const currentBox = boxes[current];
+        const previousBox = boxes[current - 1];
+
+        const debrisX =
+          currentBox.x > previousBox.x
+            ? currentBox.x + currentBox.width
+            : currentBox.x;
+
+        debris = {
+          x: debrisX,
+          y: currentBox.y,
+          width: difference,
+        };
+      }
+
       // Actualizar modo de caída
       function updateFallMode() {
         const currentBox = boxes[current];
@@ -132,6 +162,19 @@
 
         if (currentBox.y === positionPreviousBox) {
           handleBoxLanding();
+        }
+      }
+
+      // Ajustar caja actual
+      function adjustCurrentBox(difference) {
+        const currentBox = boxes[current];
+        const previousBox = boxes[current - 1];
+
+        if (currentBox.x > previousBox.x) {
+          currentBox.width -= difference;
+        } else {
+          currentBox.width += difference;
+          currentBox.x = previousBox.x;
         }
       }
 
@@ -147,6 +190,10 @@
           mode = MODES.GAMEOVER;
           return;
         }
+
+        // Revisar la diferencia del elemento y recortará
+        adjustCurrentBox(difference);
+        createNewDebris(difference);
 
         xSpeed += xSpeed > 0 ? 1 : -1;
         current++;

@@ -12,7 +12,7 @@ const HIGH_SCORE_KEY = "stackGameHighScore";
 let highScore = parseInt(localStorage.getItem(HIGH_SCORE_KEY)) || 0;
 highScoreElement.textContent = highScore;
 
-// Constantes
+// Constantes del juego
 const MODES = {
   FALL: "fall",
   BOUNCE: "bounce",
@@ -24,6 +24,35 @@ const INITIAL_BOX_Y = 600;
 const BOX_HEIGHT = 50;
 const INITIAL_Y_SPEED = 5;
 const INITIAL_X_SPEED = 2;
+
+// Constantes de UI y visualización
+const COLORS = {
+  BACKGROUND: "black",
+  DEBRIS: "red",
+  TEXT_PRIMARY: "white",
+  TEXT_SECONDARY: "rgba(255, 255, 255, 0.8)",
+  OVERLAY_GAMEOVER: "rgba(255, 0, 0, 0.5)",
+  OVERLAY_INSTRUCTIONS: "rgba(0, 0, 0, 0.7)",
+  HIGHLIGHT_RECORD: "#ffd700",
+};
+
+const FONTS = {
+  TITLE: "bold 20px Arial",
+  SUBTITLE: "16px Arial",
+  INSTRUCTIONS: "bold 14px Arial",
+  SMALL: "14px Arial",
+};
+
+const UI_POSITIONS = {
+  INSTRUCTIONS_Y_START: 20,
+  INSTRUCTIONS_HEIGHT: 60,
+  INSTRUCTIONS_TEXT_Y1: 45,
+  INSTRUCTIONS_TEXT_Y2: 65,
+  GAMEOVER_TITLE_Y: -40,
+  GAMEOVER_SCORE_Y: -10,
+  GAMEOVER_RECORD_Y: 20,
+  GAMEOVER_RESTART_Y: 60,
+};
 
 // State
 let boxes = [];
@@ -95,7 +124,7 @@ function draw() {
 }
 
 function drawBackground() {
-  ctx.fillStyle = "black";
+  ctx.fillStyle = COLORS.BACKGROUND;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 }
 
@@ -107,7 +136,7 @@ function drawDebris() {
 
   const nwY = INITIAL_BOX_Y - y + cameraY;
 
-  ctx.fillStyle = "red";
+  ctx.fillStyle = COLORS.DEBRIS;
   ctx.fillRect(x, nwY, width, BOX_HEIGHT);
 }
 
@@ -125,14 +154,27 @@ function drawInstructions() {
   // Mostrar instrucciones solo al principio del juego
   if (current === 1 && mode === MODES.BOUNCE) {
     // Fondo semi-transparente para mejor legibilidad
-    ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
-    ctx.fillRect(0, 20, canvas.width, 60);
+    ctx.fillStyle = COLORS.OVERLAY_INSTRUCTIONS;
+    ctx.fillRect(
+      0,
+      UI_POSITIONS.INSTRUCTIONS_Y_START,
+      canvas.width,
+      UI_POSITIONS.INSTRUCTIONS_HEIGHT
+    );
 
-    ctx.fillStyle = "white";
-    ctx.font = "bold 14px Arial";
+    ctx.fillStyle = COLORS.TEXT_PRIMARY;
+    ctx.font = FONTS.INSTRUCTIONS;
     ctx.textAlign = "center";
-    ctx.fillText("Presiona ESPACIO o CLICK", canvas.width / 2, 45);
-    ctx.fillText("para soltar la caja", canvas.width / 2, 65);
+    ctx.fillText(
+      "Presiona ESPACIO o CLICK",
+      canvas.width / 2,
+      UI_POSITIONS.INSTRUCTIONS_TEXT_Y1
+    );
+    ctx.fillText(
+      "para soltar la caja",
+      canvas.width / 2,
+      UI_POSITIONS.INSTRUCTIONS_TEXT_Y2
+    );
   }
 }
 
@@ -195,29 +237,45 @@ function handleGameOver() {
   const finalScore = current - 1;
   const isNewRecord = finalScore === highScore && finalScore > 0;
 
-  ctx.fillStyle = "rgba(255, 0, 0, 0.5)";
+  ctx.fillStyle = COLORS.OVERLAY_GAMEOVER;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  ctx.fillStyle = "white";
-  ctx.font = "bold 20px Arial";
+  ctx.fillStyle = COLORS.TEXT_PRIMARY;
+  ctx.font = FONTS.TITLE;
   ctx.textAlign = "center";
-  ctx.fillText("Game Over", canvas.width / 2, canvas.height / 2 - 40);
+  ctx.fillText(
+    "Game Over",
+    canvas.width / 2,
+    canvas.height / 2 + UI_POSITIONS.GAMEOVER_TITLE_Y
+  );
 
   // Mostrar puntuación final
-  ctx.font = "16px Arial";
-  ctx.fillText(`Puntuación: ${finalScore}`, canvas.width / 2, canvas.height / 2 - 10);
+  ctx.font = FONTS.SUBTITLE;
+  ctx.fillText(
+    `Puntuación: ${finalScore}`,
+    canvas.width / 2,
+    canvas.height / 2 + UI_POSITIONS.GAMEOVER_SCORE_Y
+  );
 
   // Mostrar mensaje de nuevo récord
   if (isNewRecord) {
-    ctx.fillStyle = "#ffd700";
-    ctx.font = "bold 16px Arial";
-    ctx.fillText("¡Nuevo Récord!", canvas.width / 2, canvas.height / 2 + 20);
+    ctx.fillStyle = COLORS.HIGHLIGHT_RECORD;
+    ctx.font = FONTS.SUBTITLE;
+    ctx.fillText(
+      "¡Nuevo Récord!",
+      canvas.width / 2,
+      canvas.height / 2 + UI_POSITIONS.GAMEOVER_RECORD_Y
+    );
   }
 
   // Mostrar mensaje de reinicio
-  ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
-  ctx.font = "14px Arial";
-  ctx.fillText("Click para reiniciar", canvas.width / 2, canvas.height / 2 + 60);
+  ctx.fillStyle = COLORS.TEXT_SECONDARY;
+  ctx.font = FONTS.SMALL;
+  ctx.fillText(
+    "Click para reiniciar",
+    canvas.width / 2,
+    canvas.height / 2 + UI_POSITIONS.GAMEOVER_RESTART_Y
+  );
 }
 
 // Manejar el aterrizaje de la caja

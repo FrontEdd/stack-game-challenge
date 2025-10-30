@@ -178,6 +178,19 @@
         }
       }
 
+      // GameOver
+      function handleGameOver() {
+        mode = MODES.GAMEOVER;
+
+        ctx.fillStyle = "rgba(255, 0, 0, 0.5)";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.fillStyle = "white";
+        ctx.font = "bold 20px Arial";
+        ctx.textAlign = "center";
+        ctx.fillText("Game Over", canvas.width / 2, canvas.height / 2);
+      }
+
       // Manejar el aterrizaje de la caja
       function handleBoxLanding() {
         const currentBox = boxes[current];
@@ -187,7 +200,7 @@
         const difference = currentBox.x - previousBox.x;
 
         if (Math.abs(difference) >= currentBox.width) {
-          mode = MODES.GAMEOVER;
+          handleGameOver();
           return;
         }
 
@@ -229,6 +242,14 @@
           mode = MODES.FALL;
         }
       });
+
+      canvas.onpointerdown = () => {
+        if (mode === MODES.GAMEOVER) {
+          restart();
+        } else if (mode === MODES.BOUNCE) {
+          mode = MODES.FALL;
+        }
+      };
 
       restart();
     </script>

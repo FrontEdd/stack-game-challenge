@@ -17,6 +17,7 @@ const MODES = {
   FALL: "fall",
   BOUNCE: "bounce",
   GAMEOVER: "gameover",
+  PAUSED: "paused",
 };
 const INITIAL_BOX_WIDTH = 200;
 const INITIAL_BOX_Y = 600;
@@ -33,6 +34,7 @@ const COLORS = {
   TEXT_SECONDARY: "rgba(255, 255, 255, 0.8)",
   OVERLAY_GAMEOVER: "rgba(255, 0, 0, 0.5)",
   OVERLAY_INSTRUCTIONS: "rgba(0, 0, 0, 0.7)",
+  OVERLAY_PAUSED: "rgba(0, 0, 0, 0.8)",
   HIGHLIGHT_RECORD: "#ffd700",
 };
 
@@ -58,6 +60,7 @@ const UI_POSITIONS = {
 let boxes = [];
 let debris = { x: 0, y: 0, width: 0 };
 let scrollCounter, cameraY, current, mode, xSpeed, ySpeed;
+let previousMode = null; // Para guardar el modo antes de pausar
 
 function createStepColor(step) {
   if (step === 0) return "white";
@@ -103,6 +106,21 @@ function restart() {
   draw();
 }
 
+function togglePause() {
+  // No pausar si el juego terminó
+  if (mode === MODES.GAMEOVER) return;
+
+  if (mode === MODES.PAUSED) {
+    // Reanudar: restaurar el modo anterior
+    mode = previousMode;
+    previousMode = null;
+  } else {
+    // Pausar: guardar el modo actual
+    previousMode = mode;
+    mode = MODES.PAUSED;
+  }
+}
+
 function draw() {
   if (mode === MODES.GAMEOVER) return;
 
@@ -111,14 +129,22 @@ function draw() {
   drawDebris();
   drawInstructions();
 
-  if (mode === MODES.BOUNCE) {
-    moveAndDetectCollision();
-  } else if (mode === MODES.FALL) {
-    updateFallMode();
+  // Solo actualizar lógica del juego si no está pausado
+  if (mode !== MODES.PAUSED) {
+    if (mode === MODES.BOUNCE) {
+      moveAndDetectCollision();
+    } else if (mode === MODES.FALL) {
+      updateFallMode();
+    }
+
+    debris.y -= ySpeed;
+    updateCamera();
   }
 
-  debris.y -= ySpeed;
-  updateCamera();
+  // Dibujar overlay de pausa si está pausado
+  if (mode === MODES.PAUSED) {
+    drawPauseOverlay();
+  }
 
   window.requestAnimationFrame(draw);
 }
@@ -176,6 +202,27 @@ function drawInstructions() {
       UI_POSITIONS.INSTRUCTIONS_TEXT_Y2
     );
   }
+}
+
+function drawPauseOverlay() {
+  // Overlay oscuro
+  ctx.fillStyle = COLORS.OVERLAY_PAUSED;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // Texto "PAUSA"
+  ctx.fillStyle = COLORS.TEXT_PRIMARY;
+  ctx.font = FONTS.TITLE;
+  ctx.textAlign = "center";
+  ctx.fillText("PAUSA", canvas.width / 2, canvas.height / 2 - 20);
+
+  // Instrucciones para continuar
+  ctx.fillStyle = COLORS.TEXT_SECONDARY;
+  ctx.font = FONTS.SMALL;
+  ctx.fillText(
+    "Presiona P o ESC para continuar",
+    canvas.width / 2,
+    canvas.height / 2 + 20
+  );
 }
 
 // Crear nueva caja
@@ -334,12 +381,23 @@ function moveAndDetectCollision() {
 }
 
 document.addEventListener("keydown", (event) => {
+  // Pausar/Reanudar con P o ESC
+  if (event.key === "p" || event.key === "P" || event.key === "Escape") {
+    event.preventDefault();
+    togglePause();
+    return;
+  }
+
+  // Soltar caja con ESPACIO (solo si no está pausado)
   if (event.key === " " && mode === MODES.BOUNCE) {
     mode = MODES.FALL;
   }
 });
 
 canvas.onpointerdown = () => {
+  // No permitir clicks cuando está pausado
+  if (mode === MODES.PAUSED) return;
+
   if (mode === MODES.GAMEOVER) {
     restart();
   } else if (mode === MODES.BOUNCE) {

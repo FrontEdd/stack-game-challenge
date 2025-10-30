@@ -80,6 +80,7 @@ function draw() {
   drawBackground();
   drawBoxes();
   drawDebris();
+  drawInstructions();
 
   if (mode === MODES.BOUNCE) {
     moveAndDetectCollision();
@@ -118,6 +119,21 @@ function drawBoxes() {
     ctx.fillStyle = color;
     ctx.fillRect(x, nwY, width, BOX_HEIGHT);
   });
+}
+
+function drawInstructions() {
+  // Mostrar instrucciones solo al principio del juego
+  if (current === 1 && mode === MODES.BOUNCE) {
+    // Fondo semi-transparente para mejor legibilidad
+    ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+    ctx.fillRect(0, 20, canvas.width, 60);
+
+    ctx.fillStyle = "white";
+    ctx.font = "bold 14px Arial";
+    ctx.textAlign = "center";
+    ctx.fillText("Presiona ESPACIO o CLICK", canvas.width / 2, 45);
+    ctx.fillText("para soltar la caja", canvas.width / 2, 65);
+  }
 }
 
 // Crear nueva caja
@@ -185,14 +201,23 @@ function handleGameOver() {
   ctx.fillStyle = "white";
   ctx.font = "bold 20px Arial";
   ctx.textAlign = "center";
-  ctx.fillText("Game Over", canvas.width / 2, canvas.height / 2 - 20);
+  ctx.fillText("Game Over", canvas.width / 2, canvas.height / 2 - 40);
+
+  // Mostrar puntuación final
+  ctx.font = "16px Arial";
+  ctx.fillText(`Puntuación: ${finalScore}`, canvas.width / 2, canvas.height / 2 - 10);
 
   // Mostrar mensaje de nuevo récord
   if (isNewRecord) {
     ctx.fillStyle = "#ffd700";
     ctx.font = "bold 16px Arial";
-    ctx.fillText("¡Nuevo Récord!", canvas.width / 2, canvas.height / 2 + 10);
+    ctx.fillText("¡Nuevo Récord!", canvas.width / 2, canvas.height / 2 + 20);
   }
+
+  // Mostrar mensaje de reinicio
+  ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
+  ctx.font = "14px Arial";
+  ctx.fillText("Click para reiniciar", canvas.width / 2, canvas.height / 2 + 60);
 }
 
 // Manejar el aterrizaje de la caja

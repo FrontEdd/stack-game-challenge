@@ -49,6 +49,13 @@
         return `rgb(${red}, ${green}, ${blue})`;
       }
 
+      function updateCamera() {
+        if (scrollCounter > 0) {
+          cameraY++;
+          scrollCounter--;
+        }
+      }
+
       function initializeGameState() {
         boxes = [
           {
@@ -86,6 +93,8 @@
           updateFallMode();
         }
 
+        updateCamera();
+
         window.requestAnimationFrame(draw);
       }
 
@@ -97,7 +106,7 @@
       function drawBoxes() {
         boxes.forEach((box) => {
           const { x, y, width, color } = box;
-          const nwY = INITIAL_BOX_Y - y;
+          const nwY = INITIAL_BOX_Y - y + cameraY;
 
           ctx.fillStyle = color;
           ctx.fillRect(x, nwY, width, BOX_HEIGHT);

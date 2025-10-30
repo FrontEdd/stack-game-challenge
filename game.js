@@ -94,6 +94,10 @@ function drawBackground() {
 
 function drawDebris() {
   const { x, y, width } = debris;
+
+  // Solo dibujar si hay debris visible
+  if (width === 0) return;
+
   const nwY = INITIAL_BOX_Y - y + cameraY;
 
   ctx.fillStyle = "red";

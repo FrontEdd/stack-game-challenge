@@ -9,6 +9,7 @@ Stack Game es un juego arcade donde debes apilar cajas en movimiento. Cada caja 
 ## 🎮 Controles
 
 - **ESPACIO** o **CLICK/TAP**: Soltar la caja en movimiento
+- **P** o **ESC**: Pausar/Reanudar el juego
 - **CLICK** (en Game Over): Reiniciar el juego
 
 ## 🚀 Cómo Jugar
@@ -36,6 +37,10 @@ Stack Game es un juego arcade donde debes apilar cajas en movimiento. Cada caja 
 - ✅ Visualización de debris (partes cortadas)
 - ✅ Sistema de cámara con scroll automático
 - ✅ Controles táctiles y de teclado
+- ✅ Sistema de puntuación máxima persistente (localStorage)
+- ✅ Sistema de pausa (tecla P o ESC)
+- ✅ Instrucciones en pantalla para nuevos jugadores
+- ✅ Interfaz mejorada con mensajes y feedback visual
 
 ## 📦 Instalación y Uso
 
@@ -78,8 +83,9 @@ Este proyecto fue desarrollado como un desafío de programación para practicar:
 - Gestión de estado en JavaScript
 - Diseño responsive
 
-## 📝 Historial de Commits
+## 📝 Historial de Desarrollo
 
+### Versión Inicial
 El proyecto fue desarrollado de forma incremental siguiendo estas etapas:
 
 1. Estructura HTML y estilos básicos
@@ -92,6 +98,19 @@ El proyecto fue desarrollado de forma incremental siguiendo estas etapas:
 8. Visualización de debris (partes cortadas)
 9. Configuración de controles y Game Over
 10. Contador de puntuación
+
+### Mejoras y Refactorización
+El proyecto fue mejorado con las siguientes actualizaciones:
+
+1. **Refactorización**: Separación de CSS y JavaScript en archivos externos
+2. **Responsive**: Canvas adaptable a diferentes tamaños de pantalla
+3. **Documentación**: README mejorado con instrucciones completas
+4. **Bug Fix**: Corrección del sistema de colores aleatorios
+5. **Optimización**: Renderizado optimizado de debris
+6. **High Score**: Sistema de puntuación máxima con localStorage
+7. **UX**: Instrucciones en pantalla y mensajes de retroalimentación
+8. **Mantenibilidad**: Extracción de valores mágicos a constantes
+9. **Funcionalidad**: Sistema de pausa con teclas P/ESC
 
 ## 🌐 Demo en Vivo
 

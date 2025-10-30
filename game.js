@@ -1,10 +1,16 @@
 const canvas = document.querySelector("canvas");
 const ctx = canvas.getContext("2d");
 const score = document.querySelector("#score");
+const highScoreElement = document.querySelector("#highScore");
 
 // Configurar tamaño del canvas (fijo para mantener la lógica del juego)
 canvas.width = 320;
 canvas.height = 500;
+
+// High Score
+const HIGH_SCORE_KEY = "stackGameHighScore";
+let highScore = parseInt(localStorage.getItem(HIGH_SCORE_KEY)) || 0;
+highScoreElement.textContent = highScore;
 
 // Constantes
 const MODES = {
@@ -170,13 +176,23 @@ function adjustCurrentBox(difference) {
 function handleGameOver() {
   mode = MODES.GAMEOVER;
 
+  const finalScore = current - 1;
+  const isNewRecord = finalScore === highScore && finalScore > 0;
+
   ctx.fillStyle = "rgba(255, 0, 0, 0.5)";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   ctx.fillStyle = "white";
   ctx.font = "bold 20px Arial";
   ctx.textAlign = "center";
-  ctx.fillText("Game Over", canvas.width / 2, canvas.height / 2);
+  ctx.fillText("Game Over", canvas.width / 2, canvas.height / 2 - 20);
+
+  // Mostrar mensaje de nuevo récord
+  if (isNewRecord) {
+    ctx.fillStyle = "#ffd700";
+    ctx.font = "bold 16px Arial";
+    ctx.fillText("¡Nuevo Récord!", canvas.width / 2, canvas.height / 2 + 10);
+  }
 }
 
 // Manejar el aterrizaje de la caja
@@ -201,7 +217,15 @@ function handleBoxLanding() {
   scrollCounter = BOX_HEIGHT;
   mode = MODES.BOUNCE;
 
-  score.textContent = current - 1;
+  const currentScore = current - 1;
+  score.textContent = currentScore;
+
+  // Actualizar high score si es necesario
+  if (currentScore > highScore) {
+    highScore = currentScore;
+    highScoreElement.textContent = highScore;
+    localStorage.setItem(HIGH_SCORE_KEY, highScore);
+  }
 
   createNewBox();
 }
